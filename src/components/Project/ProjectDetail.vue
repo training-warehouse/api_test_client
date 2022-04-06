@@ -8,7 +8,7 @@
         <HostList :project="project"></HostList>
       </el-tab-pane>
       <el-tab-pane label="API接口" name="3">
-        API 接口
+        <ApiEntry :project="project"></ApiEntry>
       </el-tab-pane>
       <el-tab-pane label="测试用例" name="4">
         测试用例
@@ -23,12 +23,14 @@
 <script>
 import ProjectInfo from "@/components/Project/ProjectInfo";
 import HostList from "@/components/Project/HostList";
+import ApiEntry from "@/components/Project/Api/ApiEntry";
 
 export default {
   name: "ProjectDetail",
   components: {
     ProjectInfo,
-    HostList
+    HostList,
+    ApiEntry
   },
   data() {
     return {

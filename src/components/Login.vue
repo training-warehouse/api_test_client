@@ -58,11 +58,16 @@ export default {
           return
         }
         this.$http.login(this.loginForm).then(res => {
+          if ('message' in res.data) {
+            return this.$message.error(res.data.message)
+          }
           const data = res.data
           const token = data.token
           const user = data.user
           this.$auth.setUserToken(user, token)
           this.$router.push('/')
+        }).catch(err => {
+          this.$message.error('服务器错误')
         })
       })
     }
