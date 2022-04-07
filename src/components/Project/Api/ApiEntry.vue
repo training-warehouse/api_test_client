@@ -1,7 +1,7 @@
 <template>
   <div>
     <ApiList v-if="page === PageType.API_LIST" :project="project" @pageChanged="onPageChanged"></ApiList>
-    <AddApi v-if="page === PageType.ADD_API" :project="project" @pageChanged="onPageChanged"></AddApi>
+    <AddApi v-if="page === PageType.ADD_API" :project="project" @pageChanged="onPageChanged" :api="api"></AddApi>
   </div>
 </template>
 
@@ -20,12 +20,14 @@ export default {
   data() {
     return {
       page: PageType.API_LIST,
-      PageType
+      PageType,
+      api: null
     }
   },
   methods: {
-    onPageChanged(page) {
+    onPageChanged(page, api) {
       this.page = page
+      this.api = api
     }
   }
 }

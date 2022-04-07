@@ -72,6 +72,21 @@ class Http {
         const url = `/host/${host_id}`
         return this.http.delete(url)
     }
+
+    addApi(params) {
+        const url = '/api'
+        return this.http.post(url, params)
+    }
+
+    editApi(api_id, params) {
+        const url = `/api/${api_id}`
+        return this.http.put(url, params)
+    }
+
+    deleteApi(api_id) {
+        const url = `/api/${api_id}`
+        return this.http.delete(url)
+    }
 }
 
 export default new Http()

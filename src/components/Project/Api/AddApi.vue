@@ -23,10 +23,10 @@
                 <el-option label="DELETE" value="DELETE"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="域名" prop="host">
-              <el-select v-model="form.host" placeholder="请选择域名">
-                <template v-if="project && project.host_list">
-                  <el-option v-for="host in project.host_list" :label="host.name" :value="host.id"
+            <el-form-item label="域名" prop="host_id">
+              <el-select v-model="form.host_id" placeholder="请选择域名">
+                <template v-if="project && project.hosts">
+                  <el-option v-for="host in project.hosts" :label="host.name" :value="host.id"
                              :key="host.id"/>
                 </template>
               </el-select>
@@ -111,13 +111,13 @@ import PageType from "@/components/Project/Api/PageType";
 
 export default {
   name: "AddApi",
-  props: ['project'],
+  props: ['project', 'api'],
   data() {
     return {
       form: {
         name: '',
         http_method: '',
-        host: '',
+        host_id: '',
         path: '',
         headers: [{'name': '', value: ''}],
         data: [{name: '', value: ''}],
@@ -127,7 +127,7 @@ export default {
       },
       rules: {
         name: [{required: true, trigger: 'blur', message: '请输入接口名称'}],
-        host: [{required: true, trigger: 'blur', message: '请选择host'}],
+        host_id: [{required: true, trigger: 'blur', message: '请选择host'}],
         http_method: [{required: true, trigger: 'blur', message: '请选择请求方法'}],
         path: [{required: true, trigger: 'blur', message: '请输入Path'}],
         expect_code: [{required: true, trigger: 'blur', message: '请选择状态码'}],
@@ -168,12 +168,82 @@ export default {
       status_codes: ['200', '201', '202', '203', '204', '301', '302', '400', '401', '403', '404', '405', '406', '407', '408', '500', '502']
     }
   },
+  mounted() {
+    if (this.api) {
+      const headers = JSON.parse(this.api.headers)
+      const data = JSON.parse(this.api.data)
+
+      const form = {
+        id: this.api.id,
+        name: this.api.name,
+        http_method: this.api.http_method,
+        host_id: this.api.host.id,
+        path: this.api.path,
+        headers: headers.length > 0 ? headers : [{'name': '', value: ''}],
+        data: data.length > 0 ? data : [{'name': '', value: ''}],
+        description: this.api.description,
+        expect_code: this.api.expect_code,
+        expect_content: this.api.expect_content
+      }
+
+      this.form = form
+    }
+  },
   methods: {
     onGotoApiList() {
       this.$emit('pageChanged', PageType.API_LIST)
     },
     onSave() {
+      this.$refs['form'].validate(valid => {
+        if (!valid) return
+        const params = JSON.parse(JSON.stringify(this.form))
+        const headers = []
+        const form_data = []
 
+        for (let header of params.headers) {
+          if (header.name && header.value) {
+            headers.push(header)
+          }
+        }
+
+        for (let data of params.data) {
+          if (data.name && data.value) {
+            form_data.push(data)
+          }
+        }
+
+        params.headers = JSON.stringify(headers)
+        params.data = JSON.stringify(form_data)
+        params.project_id = this.project.id
+
+        let that = this
+        this.$loading.show()
+
+        if (this.form.id) {
+          this.$http.editApi(this.form.id, params).then(res => {
+            this.$loading.hide()
+            this.$message.success()
+
+            const api = res.data
+            let index = 0
+            for (let tmp_api of that.project.apis) {
+              if (tmp_api.id === api.id) {
+                that.project.apis[index] = res.data
+                break
+              }
+              index++
+            }
+            this.$emit('pageChanged', PageType.API_LIST)
+          })
+        } else {
+          this.$http.addApi(params).then(res => {
+            this.$loading.hide()
+            this.$message.success()
+            that.project.apis.push(res.data)
+            this.$emit('pageChanged', PageType.API_LIST)
+          })
+        }
+      })
     },
     onDeleteHeader(index) {
       this.form.headers.splice(index, 1)
