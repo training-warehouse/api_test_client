@@ -76,6 +76,8 @@ export default {
         const params = JSON.parse(JSON.stringify(this.hostForm))
         params.project_id = this.project.id
         this.$loading.show()
+        const editIndex = this.editIndex
+
         if (this.dialogType === 'add') {
           this.$http.addHost(params).then(res => {
             const host = res.data
@@ -85,7 +87,7 @@ export default {
         } else {
           this.$http.editHost(this.hostForm.id, params).then(res => {
             const host = res.data
-            Vue.set(this.project.hosts, this.editIndex, host)
+            Vue.set(this.project.hosts, editIndex, host)
           })
         }
         this.initProjectForm()
@@ -94,11 +96,11 @@ export default {
       })
     },
     onEditHost(host, index) {
-      console.log(host)
       this.hostForm = JSON.parse(JSON.stringify(host))
       this.hostDialogVisible = true
       this.editIndex = index
       this.dialogType = 'edit'
+      console.log(this.editIndex)
     },
 
     onDeleteHost(host, index) {

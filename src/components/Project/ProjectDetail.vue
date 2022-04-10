@@ -11,7 +11,7 @@
         <ApiEntry :project="project"></ApiEntry>
       </el-tab-pane>
       <el-tab-pane label="测试用例" name="4">
-        测试用例
+        <CaseEntry :project="project"></CaseEntry>
       </el-tab-pane>
       <el-tab-pane label="运行记录" name="5">
         运行记录
@@ -24,13 +24,15 @@
 import ProjectInfo from "@/components/Project/ProjectInfo";
 import HostList from "@/components/Project/HostList";
 import ApiEntry from "@/components/Project/Api/ApiEntry";
+import CaseEntry from "@/components/Project/Case/CaseEntry";
 
 export default {
   name: "ProjectDetail",
   components: {
     ProjectInfo,
     HostList,
-    ApiEntry
+    ApiEntry,
+    CaseEntry
   },
   data() {
     return {

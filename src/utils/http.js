@@ -87,6 +87,11 @@ class Http {
         const url = `/api/${api_id}`
         return this.http.delete(url)
     }
+
+    runApi(api_id) {
+        const url = `/run/api/${api_id}`
+        return this.http.post(url)
+    }
 }
 
 export default new Http()
