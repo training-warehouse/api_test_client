@@ -108,7 +108,49 @@ export default {
       this.$emit('pageChanged', PageType.CASE_LIST)
     },
     onSave() {
+      this.$refs['form'].validate(valid => {
+        if (!valid) return
+        const params = JSON.parse(JSON.stringify(this.form))
 
+        let args = []
+        for (let argument of params.arguments) {
+          if (argument.name && argument.value) {
+            args.push(argument)
+          }
+        }
+        params.arguments = args
+
+
+        let apis = []
+        let index = 0
+        for (let api in params.apis) {
+          if (api.id) {
+            let api_args = []
+            for (let argument of api.arguments) {
+              if (argument.name && argument.origin && argument.format) {
+                api_args.push(argument)
+              }
+            }
+            api.arguments = api_args
+            api.index = index
+            apis.push(api)
+
+            index++
+          }
+        }
+        params.apis = apis
+        params.project_id = this.project.id
+
+        this.$loading.show()
+        let that = this
+        this.$http.addCase(params).then(res => {
+          this.$loading.hide()
+          const case_model = res.data
+          that.project.cases.push(case_model)
+          this.$emit('pageChanged', PageType.CASE_LIST)
+          this.$message.success()
+        })
+      })
     },
     onCancel() {
 
@@ -123,13 +165,17 @@ export default {
       this.form.apis.splice(index, 1)
     },
     onAddApi(case_api, index) {
-      this.form.apis.push(case_api)
+      this.form.apis.push({
+        id: '',
+        index: 0,
+        arguments: [{name: '', origin: '', format: ''}]
+      })
     },
     onRemoveApiArgument(case_api, argument, index) {
       case_api.arguments.splice(index, 1)
     },
     onAddApiArgument(case_api) {
-      case_api.arguments.push(case_api)
+      case_api.arguments.push({name: '', origin: '', format: ''})
     }
   }
 }
