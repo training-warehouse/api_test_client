@@ -37,7 +37,7 @@ export default {
 
     },
     onEditCase(case_obj, index) {
-
+      this.$emit('pageChanged', PageType.ADD_CASE, case_obj)
     },
     onDeleteCase(case_obj, index) {
 

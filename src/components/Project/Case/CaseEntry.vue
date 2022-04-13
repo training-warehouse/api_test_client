@@ -1,7 +1,8 @@
 <template>
   <div>
     <CaseList v-if="page === PageType.CASE_LIST" :project="project" @pageChanged="onPageChanged"></CaseList>
-    <AddCase v-if="page === PageType.ADD_CASE" :project="project" @pageChanged="onPageChanged"></AddCase>
+    <AddCase v-if="page === PageType.ADD_CASE" :case_obj="case_obj" :project="project"
+             @pageChanged="onPageChanged"></AddCase>
   </div>
 </template>
 
@@ -16,7 +17,8 @@ export default {
   data() {
     return {
       PageType,
-      page: PageType.CASE_LIST
+      page: PageType.CASE_LIST,
+      case_obj: null
     }
   },
   components: {
@@ -24,8 +26,9 @@ export default {
     CaseList
   },
   methods: {
-    onPageChanged(page) {
+    onPageChanged(page, case_obj) {
       this.page = page
+      this.case_obj = case_obj
     }
   }
 }

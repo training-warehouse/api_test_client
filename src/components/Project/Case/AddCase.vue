@@ -8,7 +8,7 @@
       </el-button-group>
     </div>
 
-    <el-form ref="form" :model="form" label-width="80px" :rules="rules" :inline="true">
+    <el-form ref="form" :model="form" label-width="80px" :rules="rules" :inline="true" class="form-group">
       <div class="case-name-group" style="width: 400px">
         <el-form-item label="用例名称" prop="name">
           <el-input v-model="form.name"></el-input>
@@ -38,7 +38,7 @@
             <el-select v-model="case_api.id" placeholder="请选择要执行的api">
               <el-option
                   v-for="api in project.apis"
-                  :key="api.name"
+                  :key="api.name+index"
                   :label="`${api.name}(${api.path})`"
                   :value="api.id">
               </el-option>
@@ -85,7 +85,7 @@ import PageType from "@/components/Project/Case/PageType";
 
 export default {
   name: "AddCase",
-  props: ['project'],
+  props: ['project', 'case_obj'],
   data() {
     return {
       form: {
@@ -103,6 +103,31 @@ export default {
       }
     }
   },
+  mounted() {
+    if (this.case_obj) {
+      let form = JSON.parse(JSON.stringify(this.case_obj))
+
+      if (form.arguments.length === 0) {
+        form.arguments = [{name: '', value: ''}]
+      }
+
+      if (form.apis.length === 0) {
+        this.form.apis = [{
+          id: '',
+          index: 0,
+          arguments: [{name: '', origin: '', format: ''}]
+        }]
+      } else {
+        for (let api of form.apis) {
+          if (api.arguments.length === 0) {
+            api.arguments = [{name: '', origin: '', format: ''}]
+          }
+        }
+      }
+      this.form = form
+
+    }
+  },
   methods: {
     onGotoCaseList() {
       this.$emit('pageChanged', PageType.CASE_LIST)
@@ -110,7 +135,7 @@ export default {
     onSave() {
       this.$refs['form'].validate(valid => {
         if (!valid) return
-        const params = JSON.parse(JSON.stringify(this.form))
+        let params = JSON.parse(JSON.stringify(this.form))
 
         let args = []
         for (let argument of params.arguments) {
@@ -120,10 +145,9 @@ export default {
         }
         params.arguments = args
 
-
         let apis = []
         let index = 0
-        for (let api in params.apis) {
+        for (let api of params.apis) {
           if (api.id) {
             let api_args = []
             for (let argument of api.arguments) {
@@ -159,7 +183,7 @@ export default {
       this.form.arguments.splice(index, 1)
     },
     onAddCaseArgument(argument, index) {
-      this.form.arguments.push(argument)
+      this.form.arguments.push({name: "", value: ""})
     },
     onRemoveApi(case_api, index) {
       this.form.apis.splice(index, 1)
@@ -182,6 +206,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.form-group {
+  background: #fff;
+  padding: 26px;
+}
+
 .top-group {
   padding: 10px 0;
   display: flex;
