@@ -14,7 +14,7 @@
         <CaseEntry :project="project"></CaseEntry>
       </el-tab-pane>
       <el-tab-pane label="运行记录" name="5">
-        运行记录
+        <RecordList :project="project"></RecordList>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -25,6 +25,7 @@ import ProjectInfo from "@/components/Project/ProjectInfo";
 import HostList from "@/components/Project/HostList";
 import ApiEntry from "@/components/Project/Api/ApiEntry";
 import CaseEntry from "@/components/Project/Case/CaseEntry";
+import RecordList from "@/components/Project/Record/RecordList";
 
 export default {
   name: "ProjectDetail",
@@ -32,7 +33,8 @@ export default {
     ProjectInfo,
     HostList,
     ApiEntry,
-    CaseEntry
+    CaseEntry,
+    RecordList
   },
   data() {
     return {

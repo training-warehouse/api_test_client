@@ -97,6 +97,21 @@ class Http {
         const url = '/case'
         return this.http.post(url, params)
     }
+
+    editCase(case_id, params) {
+        const url = `/case/${case_id}`
+        return this.http.put(url, params)
+    }
+
+    runCase(case_id) {
+        const url = `/run/case/${case_id}`
+        return this.http.post(url)
+    }
+
+    getRunRecord(project_id, type) {
+        const url = `/record?project=${project_id}&type=${type}`
+        return this.http.get(url)
+    }
 }
 
 export default new Http()

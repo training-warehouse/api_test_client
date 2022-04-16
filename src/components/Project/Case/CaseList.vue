@@ -20,6 +20,23 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <el-dialog title="运行结果" :visible.sync="dialogVisible" width="90%">
+      <el-table :data="records" height="500">
+        <el-table-column prop="url" label="url" width="150" fixed></el-table-column>
+        <el-table-column prop="http_method" label="请求方法" width="100"></el-table-column>
+        <el-table-column prop="headers" label="请求头"></el-table-column>
+        <el-table-column prop="data" label="请求体"></el-table-column>
+        <el-table-column prop="return_code" label="状态码" width="80"></el-table-column>
+        <el-table-column prop="return_content" label="响应体" width="800"></el-table-column>
+        <el-table-column prop="run_result" label="测试结构" width="100">
+          <template slot-scope="scope">
+            <el-tag type="success" v-if="scope.row.run_result===true">成功</el-tag>
+            <el-tag type="success" v-if="scope.row.run_result===false">失败</el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -29,12 +46,33 @@ import PageType from "@/components/Project/Case/PageType";
 export default {
   name: "CaseList",
   props: ['project'],
+  data() {
+    return {
+      dialogVisible: false,
+      records: []
+    }
+  },
   methods: {
     onAddCase() {
       this.$emit('pageChanged', PageType.ADD_CASE)
     },
     onRunCase(case_obj, index) {
+      this.$loading.show()
+      this.$http.runCase(case_obj.id).then(res => {
+        this.$loading.hide()
+        const case_record = res.data
+        let records = case_record.api_records
+        for (let record of records) {
+          if (record.return_code === record.api.expect_code) {
+            record.run_result = true
+          } else {
+            record.run_result = false
+          }
+        }
 
+        this.records = records
+        this.dialogVisible = true
+      })
     },
     onEditCase(case_obj, index) {
       this.$emit('pageChanged', PageType.ADD_CASE, case_obj)

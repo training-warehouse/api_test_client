@@ -167,17 +167,35 @@ export default {
 
         this.$loading.show()
         let that = this
-        this.$http.addCase(params).then(res => {
-          this.$loading.hide()
-          const case_model = res.data
-          that.project.cases.push(case_model)
-          this.$emit('pageChanged', PageType.CASE_LIST)
-          this.$message.success()
-        })
+        if (this.form.id) {
+          this.$http.editCase(this.form.id, params).then(res => {
+            this.$loading.hide()
+            const case_model = res.data
+
+            let index = 0
+            for (let tmp_case of that.project.cases) {
+              if (tmp_case.id === case_model.id) {
+                that.project.cases[index] = case_model
+                break
+              }
+              index++
+            }
+            this.$emit('pageChanged', PageType.CASE_LIST)
+            this.$message.success()
+          })
+        } else {
+          this.$http.addCase(params).then(res => {
+            this.$loading.hide()
+            const case_model = res.data
+            that.project.cases.push(case_model)
+            this.$emit('pageChanged', PageType.CASE_LIST)
+            this.$message.success()
+          })
+        }
       })
     },
     onCancel() {
-
+      this.$emit('pageChanged', PageType.CASE_LIST)
     },
     onRemoveCaseArgument(argument, index) {
       this.form.arguments.splice(index, 1)
