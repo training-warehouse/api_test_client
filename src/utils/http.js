@@ -112,6 +112,21 @@ class Http {
         const url = `/record?project=${project_id}&type=${type}`
         return this.http.get(url)
     }
+
+    editUser(params) {
+        const url = '/auth/user'
+        return this.http.put(url, params)
+    }
+
+    getUsers() {
+        const url = '/auth/user'
+        return this.http.get(url)
+    }
+
+    getIndexData() {
+        const url = '/index'
+        return this.http.get(url)
+    }
 }
 
 export default new Http()

@@ -5,27 +5,27 @@
         <a href="/" class="brand">API测试平台</a>
         <div class="header-content">
           <ul class="menu-list">
-            <li class="active">
+            <li :class="activeIndex === 0?'active':''">
               <router-link to="/">首页</router-link>
             </li>
-            <li class="">
+            <li :class="activeIndex === 1?'active':''">
               <router-link to="/project">项目管理</router-link>
             </li>
-            <li class="">
-              <router-link to="#">成员管理</router-link>
+            <li :class="activeIndex === 2?'active':''">
+              <router-link to="/members">成员管理</router-link>
             </li>
           </ul>
 
           <div class="signout">
             <el-dropdown>
               <span class="el-dropdown-link">
-                <img class="avatar-img" :src="'http://127.0.0.1:8000/static/image/default.jpg'">
+                <img class="avatar-img" :src="$auth.user.avatar || 'http://127.0.0.1:8000/static/image/default.jpg'">
                 {{ $auth.user.username }}
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>
-                  <router-link to="/setting">设置</router-link>
+                  <router-link to="/settings">设置</router-link>
                 </el-dropdown-item>
                 <el-dropdown-item @click.native="onLoginout">退出登录</el-dropdown-item>
               </el-dropdown-menu>
@@ -47,10 +47,28 @@
 <script>
 export default {
   name: "FrameComponent",
-  methods:{
-    onLoginout(){
+  data() {
+    return {
+      activeIndex: 0
+    }
+  },
+  methods: {
+    onLoginout() {
       this.$auth.clearUserToken()
       this.$router.replace('/login')
+    }
+  },
+  watch: {
+    '$route': function (to, from) {
+      if (to.name === 'index') {
+        this.activeIndex = 0
+      } else if (to.path.indexOf('project') > 0) {
+        this.activeIndex = 1
+      } else if (to.path.indexOf('members') > 0) {
+        this.activeIndex = 2
+      } else {
+        this.activeIndex = -1
+      }
     }
   }
 }
