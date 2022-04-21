@@ -13,7 +13,10 @@
       <el-tab-pane label="测试用例" name="4">
         <CaseEntry :project="project"></CaseEntry>
       </el-tab-pane>
-      <el-tab-pane label="运行记录" name="5">
+      <el-tab-pane label="定时任务" name="5">
+        <TaskList :project="project"></TaskList>
+      </el-tab-pane>
+      <el-tab-pane label="运行记录" name="6">
         <RecordList :project="project"></RecordList>
       </el-tab-pane>
     </el-tabs>
@@ -26,6 +29,7 @@ import HostList from "@/components/Project/HostList";
 import ApiEntry from "@/components/Project/Api/ApiEntry";
 import CaseEntry from "@/components/Project/Case/CaseEntry";
 import RecordList from "@/components/Project/Record/RecordList";
+import TaskList from "@/components/Project/TaskList";
 
 export default {
   name: "ProjectDetail",
@@ -34,12 +38,13 @@ export default {
     HostList,
     ApiEntry,
     CaseEntry,
-    RecordList
+    RecordList,
+    TaskList
   },
   data() {
     return {
       activeName: '1',
-      project:{}
+      project: {}
     }
   },
   mounted() {

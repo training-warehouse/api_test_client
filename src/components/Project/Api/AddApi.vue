@@ -127,10 +127,10 @@ export default {
       },
       rules: {
         name: [{required: true, trigger: 'blur', message: '请输入接口名称'}],
-        host_id: [{required: true, trigger: 'blur', message: '请选择host'}],
-        http_method: [{required: true, trigger: 'blur', message: '请选择请求方法'}],
+        host_id: [{required: true, trigger: 'change', message: '请选择host'}],
+        http_method: [{required: true, trigger: 'change', message: '请选择请求方法'}],
         path: [{required: true, trigger: 'blur', message: '请输入Path'}],
-        expect_code: [{required: true, trigger: 'blur', message: '请选择状态码'}],
+        expect_code: [{required: true, trigger: 'change', message: '请选择状态码'}],
       },
       activeNames: ['1', '2', '3', '4', '5'],
       headers: ['Accept',

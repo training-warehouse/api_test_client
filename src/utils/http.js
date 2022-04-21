@@ -127,6 +127,11 @@ class Http {
         const url = '/index'
         return this.http.get(url)
     }
+
+    addTask(params) {
+        const url = '/task'
+        return this.http.post(url, params)
+    }
 }
 
 export default new Http()
