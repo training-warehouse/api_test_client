@@ -11,7 +11,7 @@
             <template slot="title">
               <div class="case-record-title">
                 <span><b>{{ record.case.name }}</b></span>
-                <span> {{ record.case.create_time|dateFormat }}</span>
+                <span> {{ record.create_time|dateFormat }}</span>
               </div>
             </template>
             <RecordTable :records="record.api_records"></RecordTable>

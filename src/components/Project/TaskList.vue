@@ -18,7 +18,7 @@
       </el-table-column>
       <el-table-column label="操作" width="300">
         <template slot-scope="scope">
-          <el-button size="mini" @click="onEditProject(scope.row)">编辑</el-button>
+          <el-button size="mini" @click="onEditTask(scope.row)">编辑</el-button>
           <el-button size="mini" type="success" @click="onChangeStatus(scope.row)">
             <template v-if="scope.row.status === 1">停止</template>
             <template v-if="scope.row.status === 2">开启</template>
@@ -43,7 +43,7 @@
           <el-input v-model="taskForm.expr" autocomplete="off"></el-input>
         </el-form-item>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible=false">取消</el-button>
+          <el-button @click="initForm">取消</el-button>
           <el-button type="primary" @click="onSubmitTask">确定</el-button>
         </div>
       </el-form>
@@ -58,6 +58,7 @@ export default {
   data() {
     return {
       dialogVisible: false,
+      dialogIsEdit: false,
       taskForm: {
         name: '',
         case_id: '',
@@ -73,9 +74,11 @@ export default {
   methods: {
     onAddTask() {
       this.dialogVisible = true
+      this.dialogIsEdit = false
     },
     initForm() {
       this.dialogVisible = false
+      this.dialogIsEdit = false
       this.taskForm = {
         name: '',
         case_id: '',
@@ -89,16 +92,57 @@ export default {
         params.project_id = this.project.id
 
         let that = this
-        this.$http.addTask(params).then(res => {
-          const task = res.data
-          that.project.tasks.push(task)
-          that.initForm()
-          that.$message.success()
-        })
+        if (this.dialogIsEdit) {
+          this.$http.editTask(params.id, params).then(res => {
+            const theTask = res.data
+            for (let task of that.project.tasks) {
+              if (theTask.id === task.id) {
+                task.name = theTask.name
+                task.case_id = theTask.case.id
+                task.expr = theTask.expr
+                break
+              }
+            }
+            that.initForm()
+            that.$message.success()
+          })
+        } else {
+          this.$http.addTask(params).then(res => {
+            const task = res.data
+            that.project.tasks.push(task)
+            that.initForm()
+            that.$message.success()
+          })
+        }
       })
     },
     onChangeStatus(task) {
+      const status = task.status === 1 ? 2 : 1
+      this.$http.changeTaskStatus(task.id, status).then(res => {
+        if (res.status === 200) {
+          const theTask = res.data
+          for (task of this.project.tasks) {
+            if (task.id === theTask.id) {
+              task.status = status
+              break
+            }
+          }
+          const message = status === 1 ? '任务已经启动' : '任务已经停止'
+          this.$message.success(message)
+        } else {
+          this.$message.error(res.data.message)
+        }
 
+      })
+    },
+
+    onEditTask(task) {
+      this.taskForm.name = task.name
+      this.taskForm.case_id = task.case.id
+      this.taskForm.expr = task.expr
+      this.taskForm.id = task.id
+      this.dialogIsEdit = true
+      this.dialogVisible = true
     }
   }
 }

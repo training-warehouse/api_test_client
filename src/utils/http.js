@@ -132,6 +132,16 @@ class Http {
         const url = '/task'
         return this.http.post(url, params)
     }
+
+    editTask(task_id, params) {
+        const url = `/task/${task_id}`
+        return this.http.put(url, params)
+    }
+
+    changeTaskStatus(task_id, status) {
+        const url = `/task/${task_id}/${status}`
+        return this.http.post(url)
+    }
 }
 
 export default new Http()
