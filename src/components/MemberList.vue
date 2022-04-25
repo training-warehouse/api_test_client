@@ -16,13 +16,21 @@
         </template>
       </el-table-column>
       <el-table-column label="操作">
-        <el-button type="danger" size="mini">禁用</el-button>
+        <template slot-scope="scope">
+          <el-button :type="scope.row.is_active ? 'danger' : 'success' " size="mini"
+                     v-if="!scope.row.is_superuser"
+                     @click="changeUserStatus(scope.row,scope.$index)">
+            {{ scope.row.is_active ? "禁用" : "启用" }}
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
   </div>
 </template>
 
 <script>
+import Vue from "vue";
+
 export default {
   name: "MemberList",
   data() {
@@ -34,6 +42,14 @@ export default {
     this.$http.getUsers().then(res => {
       this.users = res.data
     })
+  },
+  methods: {
+    changeUserStatus(user, index) {
+      this.$http.changeUserStatus(user.uid, {is_active: !user.is_active}).then(res => {
+        Vue.set(this.users, index, res.data)
+        this.$message.success()
+      })
+    }
   }
 }
 </script>

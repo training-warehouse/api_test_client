@@ -123,6 +123,11 @@ class Http {
         return this.http.get(url)
     }
 
+    changeUserStatus(user_id, params) {
+        const url = `/auth/user/${user_id}`
+        return this.http.patch(url, params)
+    }
+
     getIndexData() {
         const url = '/index'
         return this.http.get(url)
